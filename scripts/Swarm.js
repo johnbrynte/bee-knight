@@ -63,8 +63,8 @@ define(['pixi', 'utils', 'Flower'], function(pixi, utils, Flower) {
         this.pos.y = 8 * (0.5 - Math.random());
 
         this.path = new pixi.Point();
-        this.path.x = 2 + 3 * Math.random();
-        this.path.y = 2 + 3 * Math.random();
+        this.path.x = 2 + 4 * Math.random();
+        this.path.y = 2 + 4 * Math.random();
         this.angle = Math.random();
         this.dir = Math.random() > 0.5 ? 1 : -1;
         this.speed = 1 + Math.random() * 3;
@@ -81,9 +81,10 @@ define(['pixi', 'utils', 'Flower'], function(pixi, utils, Flower) {
             that.angle += (that.speed + Math.random()) * that.dir * d;
             var x = Math.cos(that.angle);
             that.pos.x = x * that.path.x;
-            that.pos.y = Math.sin(that.angle) * that.path.y;
+            var y = Math.sin(that.angle);
+            that.pos.y = y * that.path.y;
 
-            that.graphics.scale.x = x < 0 ? 1 : -1;
+            that.graphics.scale.x = -that.dir * (y < 0 ? 1 : -1);
 
             that.graphics.position.x = (that.pos.x) | 0;
             that.graphics.position.y = (that.pos.y) | 0;

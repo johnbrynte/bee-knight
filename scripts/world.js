@@ -67,7 +67,7 @@ define(['pixi', 'Swarm', 'Player', 'Flower', 'input'], function(pixi, Swarm, Pla
         }
 
         for (var i = 0; i < 4; i++) {
-            var swarm = new Swarm((Math.random() * world.size | 0) * 8 + 4, (Math.random() * world.size | 0) * 8 + 4);
+            var swarm = new Swarm((Math.random() * world.size | 0) * 8 + 4, (Math.random() * world.size | 0) * 8 + 4, 4);
             world.stages.air.addChild(swarm.container);
         }
 

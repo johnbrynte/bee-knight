@@ -3,6 +3,7 @@ define([], function() {
     var input = {
         keydown: {},
         keypressed: {},
+        keyreleased: {},
 
         update: update,
     };
@@ -40,6 +41,9 @@ define([], function() {
             var keys = getKeys(evt);
 
             keys.forEach(function(key) {
+                if (input.keydown[key]) {
+                    input.keyreleased[key] = true;
+                }
                 input.keydown[key] = false;
             });
         });
@@ -54,6 +58,9 @@ define([], function() {
     function update() {
         for (var key in input.keypressed) {
             input.keypressed[key] = false;
+        }
+        for (var key in input.keyreleased) {
+            input.keyreleased[key] = false;
         }
     }
 
