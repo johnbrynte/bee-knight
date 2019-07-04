@@ -19,6 +19,8 @@ define(['pixi', 'utils', 'Flower'], function(pixi, utils, Flower) {
         this.acc = 0.001;
         this.decc = 1;
 
+        this.flower = null;
+
         for (var i = 0; i < count; i++) {
             var bee = new Bee();
             this.container.addChild(bee.graphics);
@@ -42,9 +44,17 @@ define(['pixi', 'utils', 'Flower'], function(pixi, utils, Flower) {
                 }
             });
 
-            if (flower && closest < 2 * 8) {
-                that.target.x = flower.pos.x;
-                that.target.y = flower.pos.y;
+            if (flower && closest < 2 * 8 && !flower.swarm) {
+                if (that.flower) {
+                    that.flower.swarm = null;
+                }
+                that.flower = flower;
+                flower.swarm = that;
+            }
+
+            if (that.flower) {
+                that.target.x = that.flower.pos.x;
+                that.target.y = that.flower.pos.y;
             }
 
             that.pos.x += (that.target.x - that.pos.x) * that.acc * d;

@@ -18,6 +18,8 @@ define(['pixi'], function(pixi) {
         this.pos = new pixi.Point(x, y);
         this.planted = true;
 
+        this.swarm = null;
+
         Flower.flowers.push(this);
 
         this.setPos = function(x, y, p) {

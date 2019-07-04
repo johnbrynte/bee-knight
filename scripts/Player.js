@@ -1,6 +1,6 @@
 define(['pixi', 'utils', 'input', 'Flower'], function(pixi, utils, input, Flower) {
 
-    var world;
+    var world = {};
 
     require(['world'], function(_world) {
         world = _world;
@@ -142,7 +142,7 @@ define(['pixi', 'utils', 'input', 'Flower'], function(pixi, utils, input, Flower
                     var flower = that.holding;
                     flower.planted = true;
                     world.stages.ground.addChild(flower.graphics);
-                    flower.setPos((that.pos.x | 0), (that.pos.y | 0));
+                    flower.setPos(8 * (that.pos.x / 8 | 0) + 4, 8 * (that.pos.y / 8 | 0) + 4);
 
                     that.holding = null;
                     g_player.visible = true;
@@ -241,6 +241,19 @@ define(['pixi', 'utils', 'input', 'Flower'], function(pixi, utils, input, Flower
 
             that.pos.x += that.speed.x * dt;
             that.pos.y += that.speed.y * dt;
+
+            if (that.pos.x < 4) {
+                that.pos.x = 4;
+            }
+            if (that.pos.x > world.size * 8 - 4) {
+                that.pos.x = world.size * 8 - 4;
+            }
+            if (that.pos.y < 4) {
+                that.pos.y = 4;
+            }
+            if (that.pos.y > world.size * 8 - 4) {
+                that.pos.y = world.size * 8 - 4;
+            }
 
             var tx = that.pos.x | 0;
             var ty = that.pos.y | 0;
