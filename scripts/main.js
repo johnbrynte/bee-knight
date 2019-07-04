@@ -1,10 +1,11 @@
 require.config({
     paths: {
-        pixi: '../vendor/pixi-4.5.1.min'
+        pixi: '../vendor/pixi-4.5.1.min',
+        howler: '../vendor/howler-2.1.2.min'
     }
 });
 
-require(['timer', 'world'], function(timer, world) {
+require(['timer', 'world', 'pixi', 'howler'], function(timer, world, pixi, howler) {
 
     timer(render, fixed);
 

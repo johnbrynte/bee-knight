@@ -12,6 +12,11 @@ define(['pixi', 'Swarm', 'Player', 'Flower', 'input'], function(pixi, Swarm, Pla
 
     var player;
 
+    var bgmusic = new Howl({
+        src: ['sounds/beeknight_theme.ogg'],
+        loop: true,
+    }).play();
+
     init();
 
     return world;

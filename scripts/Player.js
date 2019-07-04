@@ -77,11 +77,28 @@ define(['pixi', 'utils', 'input', 'Flower'], function(pixi, utils, input, Flower
         var g_player_step_hold = g;
         this.graphics.addChild(g_player_step_hold);
 
+        // sounds
+        this.sounds = {
+            pull: new Howl({
+                src: ['sounds/pull.ogg']
+            }),
+            pull_done: new Howl({
+                src: ['sounds/pull_done.ogg']
+            }),
+            plant: new Howl({
+                src: ['sounds/plant.ogg']
+            }),
+            footstep: new Howl({
+                src: ['sounds/footstep.ogg']
+            }),
+        };
+
         this.pos = new pixi.Point(x, y);
         this.acc = 300;
         this.decc = 50;
         this.speed = new pixi.Point(0, 0);
         this.max_speed = 50;
+        this.walk_meter = 0;
 
         this.c_pull = {
             pulling: false,
@@ -117,6 +134,8 @@ define(['pixi', 'utils', 'input', 'Flower'], function(pixi, utils, input, Flower
                             that.pos.y = flower.pos.y;
                             that.graphics.position.x = that.pos.x | 0;
                             that.graphics.position.y = that.pos.y | 0;
+
+                            that.sounds.pull.play();
                         }
                     });
                 } else {
@@ -130,6 +149,8 @@ define(['pixi', 'utils', 'input', 'Flower'], function(pixi, utils, input, Flower
                     g_player_hold.visible = false;
                     g_player_step.visible = false;
                     g_player_step_hold.visible = false;
+
+                    that.sounds.plant.play();
                 }
             }
             if (input.keyreleased.ACTION) {
@@ -139,6 +160,8 @@ define(['pixi', 'utils', 'input', 'Flower'], function(pixi, utils, input, Flower
 
                     g_player.visible = true;
                     g_player_pull.visible = false;
+
+                    that.sounds.pull.stop();
                 }
             }
 
@@ -162,6 +185,9 @@ define(['pixi', 'utils', 'input', 'Flower'], function(pixi, utils, input, Flower
                     g_player_hold.visible = true;
                     g_player_step.visible = false;
                     g_player_pull.visible = false;
+
+                    that.sounds.pull.stop();
+                    that.sounds.pull_done.play();
                 }
             }
         };
@@ -245,6 +271,13 @@ define(['pixi', 'utils', 'input', 'Flower'], function(pixi, utils, input, Flower
                         g_player_step.gotoAndPlay(0);
                     }
                 }
+
+                that.walk_meter += 4 * dt;
+                if (that.walk_meter >= 1) {
+                    that.sounds.footstep.play();
+                    that.walk_meter = 0;
+                }
+
             } else {
                 if (that.holding) {
                     g_player_hold.visible = true;
@@ -253,6 +286,8 @@ define(['pixi', 'utils', 'input', 'Flower'], function(pixi, utils, input, Flower
                     g_player.visible = true;
                     g_player_step.visible = false;
                 }
+
+                that.walk_meter = 0.8;
             }
         }
     }
