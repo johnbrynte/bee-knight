@@ -5,16 +5,20 @@ require.config({
     }
 });
 
-require(['timer', 'world', 'pixi', 'howler'], function(timer, world, pixi, howler) {
+require(['timer', 'pixi', 'howler', 'global'], function(timer, pixi, howler, global) {
 
-    timer(render, fixed);
+    require(['world'], function(world) {
 
-    function render() {
-        world.render();
-    }
+        timer(render, fixed);
 
-    function fixed() {
-        world.update(timer.fixedDeltaTime);
-    }
+        function render() {
+            world.render();
+        }
+
+        function fixed() {
+            world.update(timer.fixedDeltaTime);
+        }
+
+    });
 
 });

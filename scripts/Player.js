@@ -1,10 +1,4 @@
-define(['pixi', 'utils', 'input', 'Flower'], function(pixi, utils, input, Flower) {
-
-    var world = {};
-
-    require(['world'], function(_world) {
-        world = _world;
-    });
+define(['pixi', 'global', 'utils', 'input', 'Flower', 'Bag'], function(pixi, global, utils, input, Flower, Bag) {
 
     return Player;
 
@@ -107,6 +101,8 @@ define(['pixi', 'utils', 'input', 'Flower'], function(pixi, utils, input, Flower
             target: null,
         };
 
+        this.bag = new Bag();
+
         this.update = function(dt) {
             that.updateMovement(dt);
 
@@ -114,7 +110,7 @@ define(['pixi', 'utils', 'input', 'Flower'], function(pixi, utils, input, Flower
         };
 
         this.updateInteraction = function(dt) {
-            if (input.keypressed.ACTION) {
+            if (input.keypressed.ACTION && !that.bag.isOpen) {
                 if (!that.holding) {
                     Flower.flowers.forEach(function(flower) {
                         if (!that.c_pull.pulling
@@ -141,7 +137,7 @@ define(['pixi', 'utils', 'input', 'Flower'], function(pixi, utils, input, Flower
                 } else {
                     var flower = that.holding;
                     flower.planted = true;
-                    world.stages.ground.addChild(flower.graphics);
+                    global.stages.ground.addChild(flower.graphics);
                     flower.setPos(8 * (that.pos.x / 8 | 0) + 4, 8 * (that.pos.y / 8 | 0) + 4);
 
                     that.holding = null;
@@ -165,7 +161,45 @@ define(['pixi', 'utils', 'input', 'Flower'], function(pixi, utils, input, Flower
                 }
             }
 
-            if (that.c_pull.pulling) {
+            // bag
+            if (input.keypressed.BAG && !that.c_pull.pulling) {
+                if (!that.bag.isOpen) {
+                    if (that.holding) {
+                        // try to pocket it
+                        if (that.bag.pocketItem(that.holding)) {
+                            if (that.holding.swarm) {
+                                that.holding.swarm.flower = null;
+                            }
+                            that.holding = null;
+
+                            that.setGraphic(g_player);
+                        }
+                    } else {
+                        that.setGraphic(g_player);
+                        that.bag.open();
+                    }
+                } else {
+                    that.bag.selectNext();
+                }
+            }
+            if (input.keypressed.CLOSE && that.bag.isOpen) {
+                that.bag.close();
+            }
+            if ((input.keypressed.CONFIRM || input.keypressed.ACTION) && that.bag.isOpen) {
+                var item = that.bag.grabItem();
+                if (item) {
+                    that.bag.close();
+
+                    that.holding = item;
+                    that.graphics.addChild(item.graphics);
+                    item.graphics.position.x = 0;
+                    item.graphics.position.y = 0;
+
+                    that.setGraphic(g_player_hold);
+                }
+            }
+
+            if (that.c_pull.pulling && !that.bag.isOpen) {
                 that.c_pull.t += that.c_pull.pullSpeed * dt;
 
                 g_player_pull.position.x = that.c_pull.t * Math.cos(that.c_pull.t * 30) * 0.3;
@@ -195,8 +229,8 @@ define(['pixi', 'utils', 'input', 'Flower'], function(pixi, utils, input, Flower
         this.updateMovement = function(dt) {
             var dx = 0, dy = 0;
 
-            if (that.c_pull.pulling) {
-                // disable movement if pulling
+            if (that.c_pull.pulling || that.bag.isOpen) {
+                // disable movement if pulling or baging
                 return;
             }
 
@@ -245,14 +279,14 @@ define(['pixi', 'utils', 'input', 'Flower'], function(pixi, utils, input, Flower
             if (that.pos.x < 4) {
                 that.pos.x = 4;
             }
-            if (that.pos.x > world.size * 8 - 4) {
-                that.pos.x = world.size * 8 - 4;
+            if (that.pos.x > global.size * 8 - 4) {
+                that.pos.x = global.size * 8 - 4;
             }
             if (that.pos.y < 4) {
                 that.pos.y = 4;
             }
-            if (that.pos.y > world.size * 8 - 4) {
-                that.pos.y = world.size * 8 - 4;
+            if (that.pos.y > global.size * 8 - 4) {
+                that.pos.y = global.size * 8 - 4;
             }
 
             var tx = that.pos.x | 0;
@@ -302,6 +336,16 @@ define(['pixi', 'utils', 'input', 'Flower'], function(pixi, utils, input, Flower
 
                 that.walk_meter = 0.8;
             }
+        }
+
+        this.setGraphic = function(g) {
+            g_player.visible = false;
+            g_player_hold.visible = false;
+            g_player_step.visible = false;
+            g_player_step_hold.visible = false;
+            g_player_pull.visible = false;
+
+            g.visible = true;
         }
     }
 

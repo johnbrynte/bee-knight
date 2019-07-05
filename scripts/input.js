@@ -10,7 +10,8 @@ define([], function() {
 
     var keyLookup = {
         32: ['SPACE', 'ACTION'],
-        13: ['ENTER', 'START'],
+        13: ['ENTER', 'START', 'CONFIRM'],
+        27: ['ESC', 'CLOSE'],
         37: ['LEFT'],
         38: ['UP'],
         39: ['RIGHT'],
@@ -19,6 +20,8 @@ define([], function() {
         87: ['W', 'UP'],
         68: ['D', 'RIGHT'],
         83: ['S', 'DOWN'],
+        66: ['B', 'BAG'],
+        9: ['TAB', 'BAG'],
     };
 
     init();
