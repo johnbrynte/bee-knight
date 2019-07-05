@@ -52,15 +52,28 @@ define(['pixi', 'global', 'Swarm', 'Player', 'Flower', 'input'], function(pixi, 
         global.stages.ground.addChild(tilingSprite);
 
         // objects
-        for (var i = 0; i < 8; i++) {
-            var flower = new Flower((Math.random() * global.size | 0) * 8 + 4, (Math.random() * global.size | 0) * 8 + 4);
-            global.stages.ground.addChild(flower.graphics);
-        }
+        // for (var i = 0; i < 3; i++) {
+        //     var flower = new Flower((Math.random() * global.size | 0) * 8 + 4, (Math.random() * global.size | 0) * 8 + 4);
+        //     global.stages.ground.addChild(flower.graphics);
+        // }
 
-        for (var i = 0; i < 4; i++) {
-            var swarm = new Swarm((Math.random() * global.size | 0) * 8 + 4, (Math.random() * global.size | 0) * 8 + 4, 4);
-            global.stages.air.addChild(swarm.container);
-        }
+        var flowerA = new Flower(
+            8 * 2 + 4, 8 * 4 + 4,
+            'flower-2', Flower.A);
+        global.stages.ground.addChild(flowerA.graphics);
+
+        var flowerB = new Flower(
+            8 * 3 + 4, 8 * 4 + 4,
+            'flower-2', Flower.B);
+        global.stages.ground.addChild(flowerB.graphics);
+
+        var swarm = new Swarm(8 * 3 + 4, 8 * 3 + 4, 4);
+        global.stages.air.addChild(swarm.container);
+
+        // for (var i = 0; i < 1; i++) {
+        //     var swarm = new Swarm((Math.random() * global.size | 0) * 8 + 4, (Math.random() * global.size | 0) * 8 + 4, 4);
+        //     global.stages.air.addChild(swarm.container);
+        // }
 
         player = new Player(8, 8);
         global.stages.player.addChild(player.graphics);
@@ -75,6 +88,10 @@ define(['pixi', 'global', 'Swarm', 'Player', 'Flower', 'input'], function(pixi, 
 
         Swarm.swarms.forEach(function(swarm) {
             swarm.update(d);
+        });
+
+        Flower.flowers.forEach(function(flower) {
+            flower.update(d);
         });
 
         input.update();
