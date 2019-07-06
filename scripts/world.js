@@ -11,7 +11,7 @@ define(['pixi', 'global', 'Swarm', 'Player', 'Flower', 'Basket', 'Stage', 'input
     var bgmusic = new Howl({
         src: ['sounds/beeknight_theme.ogg'],
         loop: true,
-    });//.play();
+    }).play();
 
     var stageCurrent = 0;
     var stageDone = false;
