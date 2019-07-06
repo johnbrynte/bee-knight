@@ -1,4 +1,10 @@
-define(['pixi', 'global', 'utils', 'input', 'Flower', 'Bag', 'Basket'], function(pixi, global, utils, input, Flower, Bag, Basket) {
+define(['pixi', 'global', 'utils', 'input', 'Flower', 'Bag', 'Basket', 'Reset'], function(pixi, global, utils, input, Flower, Bag, Basket, Reset) {
+
+    var world;
+
+    require(['world'], function(_world) {
+        world = _world;
+    });
 
     return Player;
 
@@ -14,7 +20,7 @@ define(['pixi', 'global', 'utils', 'input', 'Flower', 'Bag', 'Basket'], function
         g = new pixi.Sprite(t_player);
         g.pivot.x = 4;
         g.pivot.y = 4;
-        g.visible = false;
+        g.visible = true;
         var g_player = g;
         this.graphics.addChild(g_player);
 
@@ -113,9 +119,11 @@ define(['pixi', 'global', 'utils', 'input', 'Flower', 'Bag', 'Basket'], function
             if (input.keypressed.ACTION && !that.bag.isOpen) {
                 if (!that.holding) {
                     Flower.flowers.forEach(function(flower) {
-                        if (!that.c_pull.pulling
+                        var reset = (!that.c_pull.pulling && flower instanceof Reset && utils.distance(that.pos, flower.pos) <= 4);
+                        if (reset || (
+                            !that.c_pull.pulling
                             && flower.planted
-                            && utils.distance(that.pos, flower.pos) <= 4) {
+                            && utils.distance(that.pos, flower.pos) <= 4)) {
                             that.c_pull.pulling = true;
                             that.c_pull.t = 0;
                             that.c_pull.target = flower;
@@ -194,6 +202,8 @@ define(['pixi', 'global', 'utils', 'input', 'Flower', 'Bag', 'Basket'], function
                             that.holding = null;
 
                             that.setGraphic(g_player);
+
+                            that.sounds.plant.play();
                         }
                     } else {
                         that.setGraphic(g_player);
@@ -217,6 +227,8 @@ define(['pixi', 'global', 'utils', 'input', 'Flower', 'Bag', 'Basket'], function
                     item.graphics.position.y = 0;
 
                     that.setGraphic(g_player_hold);
+
+                    that.sounds.plant.play();
                 }
             }
 
@@ -229,6 +241,13 @@ define(['pixi', 'global', 'utils', 'input', 'Flower', 'Bag', 'Basket'], function
                     var flower = that.c_pull.target;
                     that.c_pull.pulling = false;
                     that.c_pull.target = null;
+
+                    if (flower instanceof Reset) {
+                        that.sounds.pull.stop();
+                        that.sounds.pull_done.play();
+                        world.reset();
+                        return;
+                    }
 
                     that.holding = flower;
                     flower.planted = false;

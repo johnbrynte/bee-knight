@@ -124,6 +124,10 @@ define(['pixi', 'global', 'utils', 'Flower'], function(pixi, global, utils, Flow
             var interest_flower = null;
             var interest_distance = Infinity;
             Flower.flowers.forEach(function(f) {
+                if (!(f instanceof Flower)) {
+                    return;
+                }
+
                 if (that.targetFlower) {
                     return;
                 }

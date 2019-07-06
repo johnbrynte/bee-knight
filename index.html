@@ -2,14 +2,35 @@
 <html>
 <head>
 
-    <link href="https://fonts.googleapis.com/css?family=Merienda&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+
+    <link href="https://fonts.googleapis.com/css?family=Merienda|VT323&display=swap" rel="stylesheet">
 
     <link href="style.css" rel="stylesheet">
 
 </head>
 <body>
 
-    <div id="canvas-container"></div>
+    <div id="canvas-container">
+        <div id="game-messages">
+            <div id="message-success" class="game-message">
+                <div class="game__box">
+                    <h1>Great job!</h1>
+                </div>
+            </div>
+            <div id="message-finish" class="game-message">
+                <div class="game__box">
+                    <h1>You saved the 🐝!</h1>
+                </div>
+            </div>
+            <div id="message-custom" class="game-message">
+                <div class="game__box">
+                    <h1 id="message-custom__text"></h1>
+                </div>
+            </div>
+            <div id="game-condition"></div>
+        </div>
+    </div>
 
     <div class="content">
         <h1>Pollinator</h1>

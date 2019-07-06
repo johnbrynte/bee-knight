@@ -9,7 +9,7 @@ define(['pixi', 'global', 'Flower'], function(pixi, global, Flower) {
         this.graphics = g_container;
         g_container.pivot.y = 12;
         g_container.position.x = 4;
-        g_container.position.y = global.size * global.spriteSize - 4;
+        g_container.position.y = 2 * 8;
         global.stages.interface.addChild(g_container);
 
         var selector = new BagSelector();
@@ -79,6 +79,7 @@ define(['pixi', 'global', 'Flower'], function(pixi, global, Flower) {
                 item.graphics.parent.removeChild(item.graphics);
             });
 
+            size = size || 1;
             size = Math.max(1, Math.max(list.length, size));
 
             var items = [];

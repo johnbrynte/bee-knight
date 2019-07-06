@@ -58,3 +58,57 @@ img {
     margin-right: 20px;
     image-rendering: pixelated;
 }
+
+#game-messages {
+    position: relative;
+    width: 640px;
+    height: 0px;
+    margin: 0 auto;
+}
+
+#game-condition {
+    position: absolute;
+    left: 20px;
+    top: 505px;
+    font-size: 50px;
+    color: white;
+}
+
+.game-message {
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 640px;
+    height: 640px;
+
+    /* font-family: 'VT323'; */
+
+    overflow: hidden;
+
+    opacity: 0;
+    transition: opacity 0.5s;
+
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+}
+
+.game__box {
+    height: 640px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* margin-top: 100px;
+    background: beige;
+    border: 8px solid brown;
+    color: brown;
+    text-align: center;
+    padding-bottom: 1em; */
+}
+
+.game__box h1 {
+    font-size: 100px;
+    color: white;
+    text-shadow: 0 0 7px black;
+}

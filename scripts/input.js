@@ -69,6 +69,7 @@ define([], function() {
 
     function getKeys(evt) {
         if (keyLookup[evt.keyCode]) {
+            evt.stopPropagation();
             evt.preventDefault(); // prevent on registered keys
             return keyLookup[evt.keyCode];
         }

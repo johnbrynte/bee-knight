@@ -13,11 +13,9 @@ define([], function() {
                     [0, 0, 0, 0, 0, 0, 0, 0],
                     [0, 0, 0, 0, 0, 0, 0, 0]
                 ],
-                swarmSize: 1,
+                swarmSize: 2,
                 bagSize: 1,
-                condition: function(list) {
-                    return list.length > 0;
-                },
+                condition: 1,
             },
             {
                 map: [
@@ -30,11 +28,51 @@ define([], function() {
                     [0, 0, 0, 0, 0, 0, 0, 0],
                     [0, 0, 0, 0, 0, 0, 0, 0]
                 ],
-                swarmSize: 2,
+                swarmSize: 4,
                 bagSize: 1,
-                condition: function(list) {
-                    return list.length >= 4;
-                },
+                condition: 4,
+            },
+            {
+                swarmSize: 2,
+                bag: ['A', 'A', 'A', 'B', 'B', 'B'],
+                condition: 3,
+                message: "Check your bag!",
+            },
+            {
+                map: [
+                    [0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, "A", 0, 0, "B", 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, "B", 0, 0, "A", 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0]
+                ],
+                swarmSize: 4,
+                bagSize: 2,
+                condition: 4,
+            },
+            {
+                swarmSize: 4,
+                bag: ['A', 'A', 'B', 'B'],
+                condition: 4,
+                message: "Check your bag!",
+            },
+            {
+                map: [
+                    [0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, "B", "B", 0, 0, 0],
+                    [0, 0, "B", 0, 0, "B", 0, 0],
+                    [0, "B", 0, "A", "A", 0, "B", 0],
+                    [0, "B", 0, "A", "A", 0, "B", 0],
+                    [0, 0, "B", 0, 0, "B", 0, 0],
+                    [0, 0, 0, "B", "B", 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0]
+                ],
+                swarmSize: 6,
+                bagSize: 6,
+                condition: 6,
             },
         ]
     };

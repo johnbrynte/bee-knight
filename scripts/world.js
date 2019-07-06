@@ -3,6 +3,7 @@ define(['pixi', 'global', 'Swarm', 'Player', 'Flower', 'Basket', 'Stage', 'input
     var world = {
         render: render,
         update: update,
+        reset: reset,
     };
 
     var app, container, stage;
@@ -12,13 +13,15 @@ define(['pixi', 'global', 'Swarm', 'Player', 'Flower', 'Basket', 'Stage', 'input
         loop: true,
     });//.play();
 
+    var stageCurrent = 0;
+    var stageDone = false;
+    var gameDone = false;
+
     init();
 
     return world;
 
     function init() {
-        console.log(data.stages);
-
         app = new pixi.Application({
             width: global.screenSize,
             height: global.screenSize,
@@ -51,7 +54,31 @@ define(['pixi', 'global', 'Swarm', 'Player', 'Flower', 'Basket', 'Stage', 'input
         );
         global.stages.ground.addChild(tilingSprite);
 
-        stage = new Stage(data.stages[0]);
+        loadStage(stageCurrent);
+    }
+
+    function loadStage(index) {
+        if (stage) {
+            stage.destroy();
+        }
+        gameDone = false;
+        stageDone = false;
+        stage = new Stage(data.stages[index]);
+        stage.onFinish.add(onFinish);
+    }
+
+    function onFinish() {
+        stageDone = true;
+    }
+
+    function reset() {
+        if (stage) {
+            stage.destroy();
+            stage = null;
+        }
+        setTimeout(function() {
+            loadStage(stageCurrent);
+        }, 500);
     }
 
     function render() {
@@ -59,6 +86,23 @@ define(['pixi', 'global', 'Swarm', 'Player', 'Flower', 'Basket', 'Stage', 'input
     }
 
     function update(d) {
+        if (gameDone) {
+            return;
+        }
+
+        if (stageDone) {
+            if (input.keypressed.ACTION || input.keypressed.START) {
+                if (stageCurrent < data.stages.length - 1) {
+                    stageCurrent += 1;
+                    loadStage(stageCurrent);
+                } else {
+                    gameDone = true;
+                    var m_finish = document.getElementById("message-finish");
+                    m_finish.style.opacity = 1;
+                }
+            }
+        }
+
         if (stage) {
             stage.update(d);
         }

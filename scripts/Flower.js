@@ -56,6 +56,12 @@ define(['pixi'], function(pixi) {
         this.a_growTimer = 0;
         this.a_growLength = 2;
 
+        this.sounds = {
+            berry: new Howl({
+                src: ['sounds/berry.ogg']
+            }),
+        };
+
         var text = new pixi.Text('-', {
             fontFamily: 'Arial',
             fontSize: 12,
@@ -110,6 +116,8 @@ define(['pixi'], function(pixi) {
                     if (that.swarm) {
                         that.swarm.releaseFlower();
                     }
+
+                    that.sounds.berry.play();
                 }
             }
         };

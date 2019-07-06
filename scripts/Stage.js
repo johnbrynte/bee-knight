@@ -1,4 +1,4 @@
-define(['pixi', 'global', 'Swarm', 'Player', 'Flower', 'Basket', 'input'], function(pixi, global, Swarm, Player, Flower, Basket, input) {
+define(['pixi', 'global', 'utils', 'Swarm', 'Player', 'Flower', 'Basket', 'Reset', 'input'], function(pixi, global, utils, Swarm, Player, Flower, Basket, Reset, input) {
 
     return Stage;
 
@@ -8,6 +8,7 @@ define(['pixi', 'global', 'Swarm', 'Player', 'Flower', 'Basket', 'input'], funct
         // variables
 
         this.running = true;
+        this.onFinish = new utils.Listener();
 
         // fixed stuff
 
@@ -25,6 +26,15 @@ define(['pixi', 'global', 'Swarm', 'Player', 'Flower', 'Basket', 'input'], funct
         var basket = new Basket(global.basket.x, global.basket.y);
         basket.onItem.add(onAddItem);
         global.stages.ground.addChild(basket.graphics);
+
+        var reset = new Reset((global.size - 1) * 8 + 4, (global.size - 1) * 8 + 4);
+        global.stages.ground.addChild(reset.graphics);
+
+        var m_success = document.getElementById("message-success");
+        m_success.style.opacity = 0;
+
+        var m_condition = document.getElementById("game-condition");
+        m_condition.innerHTML = data.condition;
 
         // stage data
 
@@ -55,7 +65,25 @@ define(['pixi', 'global', 'Swarm', 'Player', 'Flower', 'Basket', 'input'], funct
             }
         }
 
+        this.showCustomMessage = false;
+        var m_custom = document.getElementById("message-custom");
+        var m_custom_text = document.getElementById("message-custom__text");
+        m_custom.style.opacity = 0;
+        if (data.message) {
+            this.showCustomMessage = true;
+            m_custom_text.innerHTML = data.message;
+            m_custom.style.opacity = 1;
+        }
+
+        this.sounds = {
+            winning: new Howl({
+                src: ['sounds/winning.ogg']
+            }),
+        };
+
         function onAddItem(item) {
+            m_condition.innerHTML = data.condition - basket.basket.length;
+
             if (typeof data.condition == "number") {
                 if (basket.basket.length >= data.condition) {
                     that.finish();
@@ -71,6 +99,12 @@ define(['pixi', 'global', 'Swarm', 'Player', 'Flower', 'Basket', 'input'], funct
 
         this.finish = function() {
             that.running = false;
+
+            m_success.style.opacity = 1;
+
+            that.sounds.winning.play();
+
+            that.onFinish.emit();
         };
 
         this.destroy = function() {
@@ -80,19 +114,18 @@ define(['pixi', 'global', 'Swarm', 'Player', 'Flower', 'Basket', 'input'], funct
             Swarm.swarms.forEach(function(swarm) {
                 swarm.container.destroy();
             });
+            Swarm.swarms = [];
 
             Flower.flowers.forEach(function(flower) {
                 flower.graphics.destroy();
             });
+            Flower.flowers = [];
 
             player.graphics.destroy();
+            player.bag.graphics.destroy();
         };
 
         this.update = function(d) {
-            if (that.running) {
-                player.update(d);
-            }
-
             Swarm.swarms.forEach(function(swarm) {
                 swarm.update(d);
             });
@@ -100,6 +133,18 @@ define(['pixi', 'global', 'Swarm', 'Player', 'Flower', 'Basket', 'input'], funct
             Flower.flowers.forEach(function(flower) {
                 flower.update(d);
             });
+
+            if (that.showCustomMessage) {
+                if (input.keypressed.ACTION || input.keypressed.START) {
+                    that.showCustomMessage = false;
+                    m_custom.style.opacity = 0;
+                }
+                return;
+            }
+
+            if (that.running) {
+                player.update(d);
+            }
 
             if (Basket.basket) {
                 Basket.basket.update(d);
