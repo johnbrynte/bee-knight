@@ -20,9 +20,15 @@ define(['pixi', 'global', 'utils', 'Flower'], function(pixi, global, utils, Flow
         this.decc = 1;
 
         this.flower = null;
+        this.prevFlower = null;
+        this.targetFlower = null;
+        this.visited = [];
+
         this.stayTimer = 0;
+        this.stayTimeDelay = 3;
         this.wandering = true;
         this.wanderingTimer = 0;
+        this.returnToHome = true;
 
         this.pollenStore = new Flower.PollenStore();
 
@@ -70,20 +76,66 @@ define(['pixi', 'global', 'utils', 'Flower'], function(pixi, global, utils, Flow
             that.target.y = y;
         }
 
+        this.hasVisited = function(f) {
+            return that.visited.indexOf(f.id) != -1;
+        };
+
+        this.releaseFlower = function() {
+            if (that.flower) {
+                that.flower.swarm = null;
+                that.flower = null;
+                that.targetFlower = null;
+            }
+            that.wandering = true;
+            that.target.x = that.pos.x;
+            that.target.y = that.pos.y;
+        };
+
+        this.checkWeight = function() {
+            if (that.pollenStore.getWeight() >= 3) {
+                that.returnToHome = true;
+            }
+        };
+
         this.update = function(d) {
             that.swarm.forEach(function(bee) {
                 bee.update(d);
             });
+
+            if (that.returnToHome) {
+                that.pos.x += Math.min((global.home.x - that.pos.x) * that.acc, 30) * d;
+                that.pos.y += Math.min((global.home.y - that.pos.y) * that.acc, 30) * d;
+
+                that.container.position.x = that.pos.x;
+                that.container.position.y = that.pos.y;
+
+                if (utils.distance(that.pos, global.home) < 3) {
+                    that.releaseFlower();
+                    that.pollenStore.reset();
+
+                    that.returnToHome = false;
+                    that.wandering = false;
+                }
+                return;
+            }
 
             var closest_flower = null;
             var closest_distance = Infinity;
             var interest_flower = null;
             var interest_distance = Infinity;
             Flower.flowers.forEach(function(f) {
+                if (that.targetFlower) {
+                    return;
+                }
+
+                if (f.fertilized || f.bagged) {
+                    return;
+                }
+
                 var d = utils.distance(that.pos, f.pos);
 
-                if (d < 2 * 8) {
-                    if (d < closest_distance) {
+                if (d < 3 * 8) {
+                    if (d < closest_distance && (!that.prevFlower || that.prevFlower != f)) {
                         closest_distance = d;
                         closest_flower = f;
                     }
@@ -101,42 +153,59 @@ define(['pixi', 'global', 'utils', 'Flower'], function(pixi, global, utils, Flow
                 flower = interest_flower;
                 closest = interest_distance;
             }
+            if (that.targetFlower) {
+                flower = that.targetFlower;
+                closest = utils.distance(that.pos, that.targetFlower.pos);
+            }
 
             if (flower) {
-                if (!flower.swarm && !flower.empty()) {
+                if (!flower.swarm) {
                     if (that.flower) {
                         that.flower.swarm = null;
                     }
                     that.stayTimer = 0;
+                    that.stayTimeDelay = 3 + Math.random() * 3;
+
+                    that.prevFlower = null;
                     that.flower = flower;
+                    that.targetFlower = flower;
                     flower.swarm = that;
 
-                    //console.log("new flower");
+                    that.visited.push(flower.id);
                     that.wandering = false;
                 }
-                // if same flower and its interesting
-                if (that.flower == flower) {
+                // if same flower
+                if (that.flower == flower && that.flower.planted) {
 
                     if (that.isFlowerInteresting(that.flower)) {
+
                         if (closest < 3) {
-                            //console.log(that.flower.type, "interesting", closest);
+                            that.targetFlower = null;
+
                             // collect pollen
                             that.flower.collectPollen(that, (1 / 4) * d);
 
-                            var a = [];
-                            Flower.types.forEach(function(t) {
-                                a.push(Math.round(that.pollenStore[t] * 3));
-                            });
-                            text.text = a.join(",");
+                            that.checkWeight();
                         }
                     } else {
+                        if (closest < 3) {
+                            // collect pollen
+                            that.flower.collectPollen(that, 0);
+
+                            that.checkWeight();
+                        }
+
                         that.stayTimer += d;
 
-                        if (that.stayTimer > 2) {
+                        if (that.stayTimer > that.stayTimeDelay) {
                             // leave flower
+                            that.flower.swarm = null;
+                            that.prevFlower = that.flower;
+
                             that.flower = null;
-                            that.wandering = true;
-                            that.wanderingTimer = 0;
+                            that.targetFlower = null;
+                            // that.wandering = true;
+                            // that.wanderingTimer = 0;
                             //that.pickRandomTarget();
                         }
                     }
@@ -147,13 +216,14 @@ define(['pixi', 'global', 'utils', 'Flower'], function(pixi, global, utils, Flow
                 that.target.x = that.flower.pos.x;
                 that.target.y = that.flower.pos.y;
             }
-            // if (that.wandering) {
-            //     that.wanderingTimer += d;
-            //     if (that.wanderingTimer > 3) {
-            //         that.wanderingTimer = 0;
-            //         that.pickRandomTarget();
-            //     }
-            // }
+            if (that.wandering) {
+                that.wanderingTimer += d;
+                if (that.wanderingTimer > 3) {
+                    that.wanderingTimer = 0;
+                    //that.pickRandomTarget();
+                    that.returnToHome = true;
+                }
+            }
 
             that.pos.x += (that.target.x - that.pos.x) * that.acc * d;
             that.pos.y += (that.target.y - that.pos.y) * that.acc * d;

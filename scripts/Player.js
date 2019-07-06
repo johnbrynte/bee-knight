@@ -1,4 +1,4 @@
-define(['pixi', 'global', 'utils', 'input', 'Flower', 'Bag'], function(pixi, global, utils, input, Flower, Bag) {
+define(['pixi', 'global', 'utils', 'input', 'Flower', 'Bag', 'Basket'], function(pixi, global, utils, input, Flower, Bag, Basket) {
 
     return Player;
 
@@ -136,9 +136,30 @@ define(['pixi', 'global', 'utils', 'input', 'Flower', 'Bag'], function(pixi, glo
                     });
                 } else {
                     var flower = that.holding;
+
+                    var pos = new pixi.Point(
+                        8 * (that.pos.x / 8 | 0) + 4,
+                        8 * (that.pos.y / 8 | 0) + 4);
+
+                    if (utils.distance(pos, Basket.basket.pos) < 4) {
+                        if (Basket.basket.put(flower)) {
+                            // yay
+                            if (that.holding.swarm) {
+                                that.holding.swarm.releaseFlower();
+                            }
+                            that.holding = null;
+
+                            that.setGraphic(g_player);
+                            return;
+                        } else {
+                            // could not place in basket
+                            return;
+                        }
+                    }
+
                     flower.planted = true;
                     global.stages.ground.addChild(flower.graphics);
-                    flower.setPos(8 * (that.pos.x / 8 | 0) + 4, 8 * (that.pos.y / 8 | 0) + 4);
+                    flower.setPos(pos.x, pos.y);
 
                     that.holding = null;
                     g_player.visible = true;
@@ -168,7 +189,7 @@ define(['pixi', 'global', 'utils', 'input', 'Flower', 'Bag'], function(pixi, glo
                         // try to pocket it
                         if (that.bag.pocketItem(that.holding)) {
                             if (that.holding.swarm) {
-                                that.holding.swarm.flower = null;
+                                that.holding.swarm.releaseFlower();
                             }
                             that.holding = null;
 

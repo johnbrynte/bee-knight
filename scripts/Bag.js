@@ -1,4 +1,4 @@
-define(['pixi', 'global'], function(pixi, global) {
+define(['pixi', 'global', 'Flower'], function(pixi, global, Flower) {
 
     return Bag;
 
@@ -17,11 +17,9 @@ define(['pixi', 'global'], function(pixi, global) {
         this.graphics.addChild(selector.graphics);
 
         var items = [];
-        for (var i = 0; i < 3; i++) {
-            var item = new BagItem(i);
-            this.graphics.addChild(item.graphics);
-            items.push(item);
-        }
+        var item = new BagItem(0);
+        this.graphics.addChild(item.graphics);
+        items.push(item);
         this.items = items;
 
         this.isOpen = false;
@@ -30,7 +28,10 @@ define(['pixi', 'global'], function(pixi, global) {
         this.open = function() {
             that.isOpen = true;
             that.graphics.visible = true;
-            that.selector.select(that.items[0]);
+            var item = that.items.find(function(item) {
+                return item.item;
+            });
+            that.selector.select(item || that.items[0]);
         };
 
         this.close = function() {
@@ -69,6 +70,31 @@ define(['pixi', 'global'], function(pixi, global) {
             }
             return bagItem.put(item);
         };
+
+        this.fill = function(list) {
+            that.items.forEach(function(item) {
+                if (item.item) {
+                    item.item.graphics.parent.removeChild(item.item.graphics);
+                }
+                item.graphics.parent.removeChild(item.graphics);
+            });
+
+            var items = [];
+            var rows = Math.ceil(list.length / 4);
+            for (var i = 0; i < list.length; i++) {
+                var item = new BagItem(i);
+                that.graphics.addChild(item.graphics);
+
+                var xpos = i % 4;
+                var ypos = (i - xpos) / 4;
+                item.graphics.position.x = xpos * 14;
+                item.graphics.position.y = (ypos - (rows - 1)) * 14;
+
+                item.put(list[i]);
+                items.push(item);
+            }
+            that.items = items;
+        }
     }
 
     function BagItem(index) {
@@ -76,7 +102,6 @@ define(['pixi', 'global'], function(pixi, global) {
 
         var g = new pixi.Graphics();
         this.graphics = g;
-        g.position.x = index * 14;
         g.beginFill(0x402a1e);
         g.drawRect(0, 0, 12, 12);
         g.endFill();
@@ -86,7 +111,11 @@ define(['pixi', 'global'], function(pixi, global) {
 
         this.put = function(item) {
             if (!that.item) {
+                if (item instanceof Flower && item.swarm) {
+                    item.swarm.releaseFlower();
+                }
                 that.item = item;
+                item.bagged = true;
                 that.graphics.addChild(item.graphics);
                 item.graphics.position.x = 6;
                 item.graphics.position.y = 6;
@@ -99,6 +128,7 @@ define(['pixi', 'global'], function(pixi, global) {
             if (that.item) {
                 var item = that.item;
                 that.item = null;
+                item.bagged = false;
                 return item;
             }
             return null;

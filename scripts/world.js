@@ -1,4 +1,4 @@
-define(['pixi', 'global', 'Swarm', 'Player', 'Flower', 'input'], function(pixi, global, Swarm, Player, Flower, input) {
+define(['pixi', 'global', 'Swarm', 'Player', 'Flower', 'Basket', 'input'], function(pixi, global, Swarm, Player, Flower, Basket, input) {
 
     var world = {
         render: render,
@@ -12,7 +12,7 @@ define(['pixi', 'global', 'Swarm', 'Player', 'Flower', 'input'], function(pixi, 
     var bgmusic = new Howl({
         src: ['sounds/beeknight_theme.ogg'],
         loop: true,
-    });//.play();
+    }).play();
 
     init();
 
@@ -51,32 +51,51 @@ define(['pixi', 'global', 'Swarm', 'Player', 'Flower', 'input'], function(pixi, 
         );
         global.stages.ground.addChild(tilingSprite);
 
+        var t_beehive = pixi.Texture.from('images/bee-hive.png');
+        var g_beehive = new pixi.Sprite(t_beehive);
+        g_beehive.position.x = global.home.x;
+        g_beehive.position.y = global.home.y;
+        g_beehive.pivot.x = 4;
+        g_beehive.pivot.y = 4;
+        global.stages.ground.addChild(g_beehive);
+
+        var basket = new Basket(global.basket.x, global.basket.y);
+        global.stages.ground.addChild(basket.graphics);
+
+        var genSize = (global.size - 2);
+
+        for (var i = 0; i < 4; i++) {
+            var swarm = new Swarm(global.home.x + 16, global.home.y - 16, 4);
+            global.stages.air.addChild(swarm.container);
+        }
+
         // objects
         // for (var i = 0; i < 3; i++) {
         //     var flower = new Flower((Math.random() * global.size | 0) * 8 + 4, (Math.random() * global.size | 0) * 8 + 4);
         //     global.stages.ground.addChild(flower.graphics);
         // }
 
-        var flowerA = new Flower(
-            8 * 2 + 4, 8 * 4 + 4,
-            'flower-2', Flower.A);
-        global.stages.ground.addChild(flowerA.graphics);
+        // var flowerA = new Flower(
+        //     8 * 2 + 4, 8 * 4 + 4,
+        //     'flower-2', Flower.A);
+        // global.stages.ground.addChild(flowerA.graphics);
 
-        var flowerB = new Flower(
-            8 * 3 + 4, 8 * 4 + 4,
-            'flower-2', Flower.B);
-        global.stages.ground.addChild(flowerB.graphics);
+        // var flowerB = new Flower(
+        //     8 * 3 + 4, 8 * 4 + 4,
+        //     'flower-2', Flower.B);
+        // global.stages.ground.addChild(flowerB.graphics);
 
-        var swarm = new Swarm(8 * 3 + 4, 8 * 3 + 4, 4);
-        global.stages.air.addChild(swarm.container);
+        // var swarm = new Swarm(8 * 3 + 4, 8 * 3 + 4, 4);
+        // global.stages.air.addChild(swarm.container);
 
-        // for (var i = 0; i < 1; i++) {
-        //     var swarm = new Swarm((Math.random() * global.size | 0) * 8 + 4, (Math.random() * global.size | 0) * 8 + 4, 4);
-        //     global.stages.air.addChild(swarm.container);
-        // }
-
-        player = new Player(8, 8);
+        player = new Player(8 + 4, 8 + 4);
         global.stages.player.addChild(player.graphics);
+
+        var itemList = [Flower.A, Flower.A, Flower.A, Flower.A, Flower.B, Flower.B, Flower.B];
+        var flowerList = itemList.map(function(type) {
+            return new Flower(0, 0, type);
+        });
+        player.bag.fill(flowerList);
     }
 
     function render() {
@@ -93,6 +112,10 @@ define(['pixi', 'global', 'Swarm', 'Player', 'Flower', 'input'], function(pixi, 
         Flower.flowers.forEach(function(flower) {
             flower.update(d);
         });
+
+        if (Basket.basket) {
+            Basket.basket.update(d);
+        }
 
         input.update();
     }

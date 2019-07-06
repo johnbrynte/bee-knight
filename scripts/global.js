@@ -6,6 +6,8 @@ define(['pixi'], function(pixi) {
         spriteSize: 8,
         scale: 8,
         size: 0,
+        home: null,
+        basket: null,
 
         addStagesToContainer: addStagesToContainer,
     };
@@ -16,6 +18,9 @@ define(['pixi'], function(pixi) {
 
     function init() {
         global.size = global.screenSize / (global.scale * global.spriteSize);
+
+        global.home = new pixi.Point((global.size - 2) * 8 + 4, (1 * 8) + 4);
+        global.basket = new pixi.Point((1 * 8) + 4, (global.size - 2) * 8 + 4);
 
         global.stages.ground = new pixi.Container();
         global.stages.player = new pixi.Container();

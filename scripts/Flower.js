@@ -10,13 +10,24 @@ define(['pixi'], function(pixi) {
 
     Flower.PollenStore = PollenStore;
 
+    Flower.ID = 1;
+
     return Flower;
 
-    function Flower(x, y, texture_name, type) {
+    function Flower(x, y, type) {
         var that = this;
 
-        if (!texture_name) {
-            texture_name = "flower-2";
+        this.id = (Flower.ID++);
+
+        var textures;
+        switch (type) {
+            case Flower.B:
+                textures = ["flower-B", "flower-B_empty", "flower-2_berry"];
+                break;
+            case Flower.A:
+            default:
+                textures = ["flower-2", "flower-2_empty", "flower-2_berry"];
+                break;
         }
 
         this.graphics = new pixi.Container();
@@ -26,18 +37,18 @@ define(['pixi'], function(pixi) {
         this.graphics.position.y = y;
 
         // flower
-        var t_flower = pixi.Texture.from('images/' + texture_name + '.png');
+        var t_flower = pixi.Texture.from('images/' + textures[0] + '.png');
         var g_flower = new pixi.Sprite(t_flower);
         this.graphics.addChild(g_flower);
 
         // flower empty
-        var t_flower_empty = pixi.Texture.from('images/' + texture_name + '_empty.png');
+        var t_flower_empty = pixi.Texture.from('images/' + textures[1] + '.png');
         var g_flower_empty = new pixi.Sprite(t_flower_empty);
         g_flower_empty.visible = false;
         this.graphics.addChild(g_flower_empty);
 
         // flower berry
-        var t_flower_berry = pixi.Texture.from('images/' + texture_name + '_berry.png');
+        var t_flower_berry = pixi.Texture.from('images/' + textures[2] + '.png');
         var g_flower_berry = new pixi.Sprite(t_flower_berry);
         g_flower_berry.visible = false;
         this.graphics.addChild(g_flower_berry);
@@ -54,7 +65,8 @@ define(['pixi'], function(pixi) {
         //this.graphics.addChild(text);
 
         this.pos = new pixi.Point(x, y);
-        this.planted = true;
+        this.planted = false;
+        this.bagged = false;
 
         this.swarm = null;
 
@@ -94,6 +106,10 @@ define(['pixi'], function(pixi) {
                 if (that.pollenStore.isFertilized()) {
                     that.fertilized = true;
                     that.setGraphic(g_flower_berry);
+
+                    if (that.swarm) {
+                        that.swarm.releaseFlower();
+                    }
                 }
             }
         };
@@ -136,13 +152,10 @@ define(['pixi'], function(pixi) {
             that.collected[t] = 0;
         });
 
-        this.collected[Flower.B] = 0;
-        this.collected[Flower.C] = 0;
-
         this.type = null;
         if (type) {
             this.type = type;
-            this[type] = 3;
+            this[type] = 1;
         }
 
         this.collect = function(store, amount) {
@@ -157,20 +170,20 @@ define(['pixi'], function(pixi) {
             // exchange pollen if different types
             if (!store.type) {
                 Flower.types.forEach(function(t) {
-                    if (store[t] > 0 && that.type != t) {
-                        that[t] += amount;
+                    if (store[t] > 0 && that[t] < 1 && that.type != t) {
+                        that[t] += (1 / 60) * (1 / 4);
                     }
                 });
             }
-            if (that.type != store.type) {
-                store[that.type] += _amount;
+            if (that.type != store.type) { //that[that.type] > 0 && 
+                store[that.type] += (1 / 60) * (1 / 4);
             }
         }
 
         this.isFertilized = function() {
             var count = 0;
             Flower.types.forEach(function(t) {
-                if (that[t] > 0.5) {
+                if (that.type == t || that[t] >= 1) {
                     count += 1;
                 }
             });
@@ -182,6 +195,25 @@ define(['pixi'], function(pixi) {
                 return 0;
             }
             return that[that.type];
+        };
+
+        this.getWeight = function() {
+            var w = 0;
+            Flower.types.forEach(function(t) {
+                w += that[t];
+            });
+            return w;
+        };
+
+        this.reset = function() {
+            Flower.types.forEach(function(t) {
+                that[t] = 0;
+                that.collected[t] = 0;
+            });
+
+            if (that.type) {
+                that[that.type] = 1;
+            }
         };
 
         this.empty = function() {
