@@ -71,7 +71,7 @@ define(['pixi', 'global', 'Flower'], function(pixi, global, Flower) {
             return bagItem.put(item);
         };
 
-        this.fill = function(list) {
+        this.fill = function(list, size) {
             that.items.forEach(function(item) {
                 if (item.item) {
                     item.item.graphics.parent.removeChild(item.item.graphics);
@@ -79,9 +79,11 @@ define(['pixi', 'global', 'Flower'], function(pixi, global, Flower) {
                 item.graphics.parent.removeChild(item.graphics);
             });
 
+            size = Math.max(1, Math.max(list.length, size));
+
             var items = [];
-            var rows = Math.ceil(list.length / 4);
-            for (var i = 0; i < list.length; i++) {
+            var rows = Math.ceil(size / 4);
+            for (var i = 0; i < size; i++) {
                 var item = new BagItem(i);
                 that.graphics.addChild(item.graphics);
 
@@ -90,7 +92,9 @@ define(['pixi', 'global', 'Flower'], function(pixi, global, Flower) {
                 item.graphics.position.x = xpos * 14;
                 item.graphics.position.y = (ypos - (rows - 1)) * 14;
 
-                item.put(list[i]);
+                if (i < list.length) {
+                    item.put(list[i]);
+                }
                 items.push(item);
             }
             that.items = items;

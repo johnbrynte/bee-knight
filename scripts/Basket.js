@@ -1,4 +1,4 @@
-define(['pixi', 'global', 'Flower'], function(pixi, global, Flower) {
+define(['pixi', 'utils', 'global', 'Flower'], function(pixi, utils, global, Flower) {
 
     Basket.basket = null;
 
@@ -25,6 +25,8 @@ define(['pixi', 'global', 'Flower'], function(pixi, global, Flower) {
 
         this.basket = [];
 
+        this.onItem = new utils.Listener();
+
         this.put = function(item) {
             if (item instanceof Flower) {
                 if (item.fertilized) {
@@ -33,6 +35,9 @@ define(['pixi', 'global', 'Flower'], function(pixi, global, Flower) {
 
                     that.a_grow = true;
                     that.a_growTimer = 0;
+
+                    that.onItem.emit(item);
+
                     return true;
                 }
             }

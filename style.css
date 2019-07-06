@@ -2,9 +2,59 @@ body {
     margin: 0;
     padding: 40px;
     background: #252629;
+
+    font-family: 'Merienda';
+    font-size: 1.3em;
+    color: #aaa;
+}
+
+#canvas-container {
+    height: 640px;
 }
 
 canvas {
     display: block;
     margin: 0 auto;
+}
+
+.content {
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+h1 {
+    font-size: 2.6em;
+    color: #d14836;
+    text-align: center;
+}
+
+h2 {
+    color: #555;
+    margin-bottom: 0.4em;
+}
+
+p {
+    margin: 0.5em 0;
+}
+
+key {
+    text-decoration: underline;
+}
+
+td {
+    width: 50%;
+    vertical-align: top;
+    padding-bottom: 15px;
+}
+
+table.items-table td {
+    width: auto;
+    vertical-align: middle;
+}
+
+img {
+    width: 64px;
+    height: 64px;
+    margin-right: 20px;
+    image-rendering: pixelated;
 }
