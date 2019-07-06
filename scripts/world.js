@@ -54,7 +54,7 @@ define(['pixi', 'global', 'Swarm', 'Player', 'Flower', 'Basket', 'Stage', 'input
         );
         global.stages.ground.addChild(tilingSprite);
 
-        loadStage(stageCurrent);
+        loadStage(2);
     }
 
     function loadStage(index) {

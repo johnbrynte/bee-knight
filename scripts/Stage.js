@@ -70,9 +70,11 @@ define(['pixi', 'global', 'utils', 'Swarm', 'Player', 'Flower', 'Basket', 'Reset
         var m_custom_text = document.getElementById("message-custom__text");
         m_custom.style.opacity = 0;
         if (data.message) {
-            this.showCustomMessage = true;
-            m_custom_text.innerHTML = data.message;
-            m_custom.style.opacity = 1;
+            setTimeout(function() {
+                this.showCustomMessage = true;
+                m_custom_text.innerHTML = data.message;
+                m_custom.style.opacity = 1;
+            }, 500);
         }
 
         this.sounds = {

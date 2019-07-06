@@ -91,7 +91,7 @@ define(['pixi', 'global', 'Flower'], function(pixi, global, Flower) {
                 var xpos = i % 4;
                 var ypos = (i - xpos) / 4;
                 item.graphics.position.x = xpos * 14;
-                item.graphics.position.y = (ypos - (rows - 1)) * 14;
+                item.graphics.position.y = (ypos) * 14;
 
                 if (i < list.length) {
                     item.put(list[i]);
