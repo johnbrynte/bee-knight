@@ -71,7 +71,7 @@ define(['pixi', 'global', 'utils', 'Swarm', 'Player', 'Flower', 'Basket', 'Reset
         m_custom.style.opacity = 0;
         if (data.message) {
             setTimeout(function() {
-                this.showCustomMessage = true;
+                that.showCustomMessage = true;
                 m_custom_text.innerHTML = data.message;
                 m_custom.style.opacity = 1;
             }, 500);

@@ -97,8 +97,8 @@ define(['pixi', 'global', 'Swarm', 'Player', 'Flower', 'Basket', 'Stage', 'input
                     loadStage(stageCurrent);
                 } else {
                     gameDone = true;
-                    var m_finish = document.getElementById("message-finish");
-                    m_finish.style.opacity = 1;
+                    document.getElementById("message-success").style.opacity = 0;
+                    document.getElementById("message-finish").style.opacity = 1;
                 }
             }
         }

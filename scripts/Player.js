@@ -91,6 +91,9 @@ define(['pixi', 'global', 'utils', 'input', 'Flower', 'Bag', 'Basket', 'Reset'],
             footstep: new Howl({
                 src: ['sounds/footstep.ogg']
             }),
+            basket: new Howl({
+                src: ['sounds/basket.ogg']
+            }),
         };
 
         this.pos = new pixi.Point(x, y);
@@ -158,6 +161,8 @@ define(['pixi', 'global', 'utils', 'input', 'Flower', 'Bag', 'Basket', 'Reset'],
                             that.holding = null;
 
                             that.setGraphic(g_player);
+
+                            that.sounds.basket.play();
                             return;
                         } else {
                             // could not place in basket

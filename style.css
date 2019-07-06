@@ -47,6 +47,10 @@ td {
     padding-bottom: 15px;
 }
 
+a, a:visited, a:link, a:hover, a:active {
+    color: white;
+}
+
 table.items-table td {
     width: auto;
     vertical-align: middle;
